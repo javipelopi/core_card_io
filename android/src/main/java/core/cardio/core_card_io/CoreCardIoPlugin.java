@@ -129,7 +129,8 @@ public class CoreCardIoPlugin implements MethodCallHandler, ActivityResultListen
             scanIntent.putExtra(CardIOActivity.EXTRA_REQUIRE_CVV, requireCVV); // default: false
             scanIntent.putExtra(CardIOActivity.EXTRA_REQUIRE_POSTAL_CODE, requirePostalCode); // default: false
             scanIntent.putExtra(CardIOActivity.EXTRA_REQUIRE_CARDHOLDER_NAME, requireCardHolderName);
-            scanIntent.putExtra(CardIOActivity.EXTRA_RESTRICT_POSTAL_CODE_TO_NUMERIC_ONLY, restrictPostalCodeToNumericOnly);
+            scanIntent.putExtra(CardIOActivity.EXTRA_RESTRICT_POSTAL_CODE_TO_NUMERIC_ONLY,
+                    restrictPostalCodeToNumericOnly);
             scanIntent.putExtra(CardIOActivity.EXTRA_SCAN_INSTRUCTIONS, scanInstructions);
             scanIntent.putExtra(CardIOActivity.EXTRA_SUPPRESS_MANUAL_ENTRY, suppressManualEntry);
             scanIntent.putExtra(CardIOActivity.EXTRA_SUPPRESS_CONFIRMATION, suppressConfirmation);
@@ -147,16 +148,15 @@ public class CoreCardIoPlugin implements MethodCallHandler, ActivityResultListen
 
     @Override
     public boolean onActivityResult(int requestCode, int resultCode, Intent data) {
-        Log.d("onActivityResult", "code: " + requestCode);
-        if (requestCode == MY_SCAN_REQUEST_CODE) {
+        if (requestCode == MY_SCAN_REQUEST_CODE && pendingResult != null) {
             if (data != null && data.hasExtra(CardIOActivity.EXTRA_SCAN_RESULT)) {
                 CreditCard scanResult = data.getParcelableExtra(CardIOActivity.EXTRA_SCAN_RESULT);
-
                 Map<String, Object> response = new HashMap<>();
                 response.put("cardholderName", scanResult.cardholderName);
                 response.put("cardNumber", scanResult.cardNumber);
                 String cardType = null;
-                if (scanResult.getCardType() != CardType.UNKNOWN && scanResult.getCardType() != CardType.INSUFFICIENT_DIGITS) {
+                if (scanResult.getCardType() != CardType.UNKNOWN
+                        && scanResult.getCardType() != CardType.INSUFFICIENT_DIGITS) {
                     switch (scanResult.getCardType()) {
                         case AMEX:
                             cardType = "Amex";
